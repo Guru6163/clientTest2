@@ -34,4 +34,4 @@ function Main() {
   );
 }
 
-export default withAuthenticator(Main);
+export default (Main);

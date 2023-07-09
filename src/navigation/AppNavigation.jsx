@@ -12,6 +12,9 @@ import { useAuthContext } from '../contexts/AuthContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useOrderContext } from '../contexts/OrderContext';
 import DeliveryAddressScreen from '../screens/DeliveryAddressScreen';
+import SignInScreen from '../screens/SignInScreen';
+import SignUpScreen from '../screens/SignUpScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -20,9 +23,9 @@ const Tab = createBottomTabNavigator();
 function AppNavigation() {
   const { dbUser } = useAuthContext();
   return (
-    <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName='SignInStack' screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeBottomTabsScreen} />  
-      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="SignInStack" component={SignInStackNavigator} />  
     </Stack.Navigator>
   );
 }
@@ -72,6 +75,19 @@ const HomeBottomTabsScreen = () => {
 };
 
 const HomeStack = createNativeStackNavigator();
+
+const SignInStack = createNativeStackNavigator();
+
+const SignInStackNavigator = () =>{
+  return(
+    <SignInStack.Navigator screenOptions={{ headerShown: false }}>
+      <SignInStack.Screen name="SignIn" component={SignInScreen}  />
+      <SignInStack.Screen name="SignUp" component={SignUpScreen}  />
+      <SignInStack.Screen name="ForgotPassword" component={ForgotPasswordScreen}  />
+      {/* <SignInStack.Screen name="SignIn" component={SignInScreen}  /> */}
+    </SignInStack.Navigator>
+  )
+}
 
 const HomeStackNavigator = () => {
   return (

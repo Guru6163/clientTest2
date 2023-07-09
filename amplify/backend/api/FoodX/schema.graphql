@@ -1,8 +1,15 @@
-enum RestaurantCategory {
+enum ResturantCategory {
   VEG
   NON_VEG
   BOTH
   JUICES
+}
+
+type OrderDish @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  quantity: Int!
+  orderID: ID! @index(name: "byOrder")
+  Dish: Dish @hasOne
 }
 
 enum OrderStatus {
@@ -13,55 +20,47 @@ enum OrderStatus {
   DELIVERED
 }
 
-type OrderDish @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  quantity: Int!
-  Dish: Dish @hasOne
-  orderID: ID! @index(name: "byOrder")
-}
-
 type Order @model @auth(rules: [{allow: public}]) {
   id: ID!
   userID: ID! @index(name: "byUser")
-  Restaurant: Restaurant @hasOne
-  total: Float!
-  status: OrderStatus!
+  status: OrderStatus
   OrderDishes: [OrderDish] @hasMany(indexName: "byOrder", fields: ["id"])
-}
-
-type User @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String!
-  address: String!
-  phoneNumber: String
-  email: String
-  Orders: [Order] @hasMany(indexName: "byUser", fields: ["id"])
-  sub: String!
-  lat: Float!
-  lng: Float!
+  Restaurant: Restaurant @hasOne
 }
 
 type Dish @model @auth(rules: [{allow: public}]) {
   id: ID!
-  name: String!
+  name: String
   image: String
   description: String
-  price: Float
+  price: Int
   restaurantID: ID! @index(name: "byRestaurant")
 }
 
 type Restaurant @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
-  image: String!
-  deliveryFee: Float!
-  minDeliveryTime: Int!
-  maxDeliveryTime: Int!
+  image: String
+  deliveryFee: Int!
+  minDeliveryTime: String!
+  maxDeliveryTime: String!
   rating: Float
-  address: String!
+  adress: String
   lat: Float
   lng: Float
   Dishes: [Dish] @hasMany(indexName: "byRestaurant", fields: ["id"])
-  category: RestaurantCategory
+  category: ResturantCategory
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  phoneNumber: String
+  email: String
+  address: String
+  lat: Float
+  lng: Float
+  sub: String
+  Orders: [Order] @hasMany(indexName: "byUser", fields: ["id"])
 }
  
