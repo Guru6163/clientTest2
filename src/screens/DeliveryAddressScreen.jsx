@@ -15,14 +15,14 @@ import { encode as base64Encode } from 'base-64';
 function DeliveryAddressScreen() {
     const { dbUser, setDbUser } = useAuthContext();
     const { totalPrice } = useBasketContext()
-    const { createOrder, setPaymentMethod: setPayment } = useOrderContext()
+    const { createOrder } = useOrderContext()
     const [name, setName] = useState(dbUser?.name || '');
     const [address, setAddress] = useState(dbUser?.address || '');
     const [phoneNumber, setPhoneNumber] = useState(dbUser?.phoneNumber || '');
     const [lat, setLat] = useState(dbUser?.lat.toString() || '0');
     const [lng, setLng] = useState(dbUser?.lng.toString() || '0');
-    const [paymentMethod, setPaymentMethod] = useState('Online Payment');
     const [rpOrder, setRpOrder] = useState({})
+    const [paymentMethod, setPaymentMethod] = useState("Online Payment")
 
     const createRPOrder = async () => {
         const username = 'rzp_test_s96WrESoIIuwmE';
@@ -40,7 +40,7 @@ function DeliveryAddressScreen() {
                 'Authorization': `Basic ${encodedCredentials}`
             },
             body: JSON.stringify({
-                "amount": totalPrice,
+                "amount": totalPrice*100,
                 "currency": "INR",
             })
 
@@ -134,13 +134,13 @@ function DeliveryAddressScreen() {
                 theme: { color: '#53a20e' }
             }
             RazorpayCheckout.open(options).then((data) => {
-                createOrder(rpOrder.id, data.razorpay_payment_id)
+                createOrder(rpOrder.id, data.razorpay_payment_id, paymentMethod)
             }).catch((error) => {
-                Alert.alert(`Error: ${error.code} | ${error}`);
+                Alert.alert(`Error: Payment Failed`);
             });
         } else {
             try {
-                await createOrder()
+                await createOrder("", "", paymentMethod)
             }
             catch (err) {
                 console.log(err)
@@ -200,7 +200,6 @@ function DeliveryAddressScreen() {
                     selectedValue={paymentMethod}
                     onValueChange={(value) => {
                         setPaymentMethod(value)
-                        setPayment(value)
                     }}
                 >
                     <Picker.Item label="Online Payment" value="Online Payment" />
@@ -208,6 +207,9 @@ function DeliveryAddressScreen() {
                 </Picker>
 
             </View>
+            <Text style={{paddingHorizontal:20,marginTop:10}}>
+                Order Total : {totalPrice}
+            </Text>
 
             <TouchableOpacity onPress={handleProceed} style={styles.proceedButton}>
                 <Text style={styles.proceedButtonText}>Proceed</Text>

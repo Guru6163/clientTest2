@@ -1,25 +1,26 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { DataStore } from "aws-amplify";
+import { Alert } from "react-native";
 import { Order, OrderDish, Dish } from "../models";
 import { useAuthContext } from "./AuthContext";
 import { useBasketContext } from "./BasketContext";
-
+import { useNavigation } from "@react-navigation/native";
 
 
 const OrderContext = createContext({});
 
 const OrderContextProvider = ({ children }) => {
   const { dbUser } = useAuthContext();
+  const navigation = useNavigation()
   const { restaurant, totalPrice, cartItems, setCartItems } = useBasketContext();
   const [orders, setOrders] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState("")
-  const [rpOrder, setRpOrder] = useState({})
+
 
   useEffect(() => {
     DataStore.query(Order, (o) => o.userID.eq(dbUser.id)).then(setOrders);
   }, [dbUser]);
 
-  const createOrder = async (rpOrderId, rpPaymentId) => {
+  const createOrder = async (rpOrderId, rpPaymentId, paymentMethod) => {
     console.log(rpOrderId, rpPaymentId)
     try {
       const newOrder = await DataStore.save(
@@ -28,9 +29,9 @@ const OrderContextProvider = ({ children }) => {
           Restaurant: restaurant,
           status: "NEW",
           total: parseInt(totalPrice),
-          paymentMethod: (paymentMethod).toString(),
-          razorpayPaymentId: rpPaymentId || "",
-          razorpayOrderId: rpOrderId || ""
+          paymentMethod: paymentMethod,
+          razorpayPaymentId: rpPaymentId || "-",
+          razorpayOrderId: rpOrderId || "-"
         })
       );
 
@@ -54,13 +55,14 @@ const OrderContextProvider = ({ children }) => {
 
       setOrders([newOrder, ...orders]);
       setCartItems([])
+      navigation.navigate("Orders")
     } catch (error) {
-      console.log("Error creating order:", error);
+      Alert.alert("Error creating order:", error);
 
     }
   };
 
-  
+
   const getOrder = async (id) => {
     const order = await DataStore.query(Order, id);
     const orderDishes = await DataStore.query(OrderDish, (od) =>
@@ -71,7 +73,7 @@ const OrderContextProvider = ({ children }) => {
   };
 
   return (
-    <OrderContext.Provider value={{ createOrder, orders, getOrder, setPaymentMethod, rpOrder }}>
+    <OrderContext.Provider value={{ createOrder, orders, getOrder }}>
       {children}
     </OrderContext.Provider>
   );
