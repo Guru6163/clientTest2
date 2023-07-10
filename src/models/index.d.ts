@@ -65,6 +65,8 @@ type EagerOrder = {
   readonly Restaurant?: Restaurant | null;
   readonly paymentMethod: string;
   readonly total: number;
+  readonly razorpayPaymentId?: string | null;
+  readonly razorpayOrderId?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly orderRestaurantId?: string | null;
@@ -82,6 +84,8 @@ type LazyOrder = {
   readonly Restaurant: AsyncItem<Restaurant | undefined>;
   readonly paymentMethod: string;
   readonly total: number;
+  readonly razorpayPaymentId?: string | null;
+  readonly razorpayOrderId?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly orderRestaurantId?: string | null;

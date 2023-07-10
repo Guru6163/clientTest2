@@ -28,6 +28,8 @@ type Order @model @auth(rules: [{allow: public}]) {
   Restaurant: Restaurant @hasOne
   paymentMethod: String!
   total: Int!
+  razorpayPaymentId: String
+  razorpayOrderId: String
 }
 
 type Dish @model @auth(rules: [{allow: public}]) {

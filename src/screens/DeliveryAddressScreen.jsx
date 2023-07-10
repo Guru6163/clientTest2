@@ -9,17 +9,52 @@ import RazorpayCheckout from 'react-native-razorpay';
 import { User } from '../models';
 import { DataStore } from 'aws-amplify';
 import { useOrderContext } from '../contexts/OrderContext';
+import { useBasketContext } from '../contexts/BasketContext';
+import { encode as base64Encode } from 'base-64';
 
 function DeliveryAddressScreen() {
     const { dbUser, setDbUser } = useAuthContext();
+    const { totalPrice } = useBasketContext()
     const { createOrder, setPaymentMethod: setPayment } = useOrderContext()
     const [name, setName] = useState(dbUser?.name || '');
     const [address, setAddress] = useState(dbUser?.address || '');
     const [phoneNumber, setPhoneNumber] = useState(dbUser?.phoneNumber || '');
     const [lat, setLat] = useState(dbUser?.lat.toString() || '0');
     const [lng, setLng] = useState(dbUser?.lng.toString() || '0');
-    const [paymentMethod, setPaymentMethod] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('Online Payment');
+    const [rpOrder, setRpOrder] = useState({})
 
+    const createRPOrder = async () => {
+        const username = 'rzp_test_s96WrESoIIuwmE';
+        const password = 'xwXAAgCLUlLF18LE0LD9AyDR';
+        const headers = new Headers();
+        const credentials = `${username}:${password}`;
+        const encodedCredentials = base64Encode(credentials);
+        headers.append('Authorization', `Basic ${encodedCredentials}`);
+
+        var options = {
+            'method': 'POST',
+            'url': 'https://api.razorpay.com/v1/orders',
+            'headers': {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${encodedCredentials}`
+            },
+            body: JSON.stringify({
+                "amount": totalPrice,
+                "currency": "INR",
+            })
+
+        };
+
+        try {
+            const response = await fetch('https://api.razorpay.com/v1/orders', options);
+            const data = await response.json();
+            Alert.alert(JSON.stringify(data))
+            setRpOrder(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const [region, setRegion] = useState({
         latitude: 12.669160,
@@ -77,44 +112,40 @@ function DeliveryAddressScreen() {
                 })
             );
             setDbUser(user);
-            Alert.alert('User Updated Successfully', JSON.stringify(user));
+            console.log('User Updated Successfully', JSON.stringify(user));
         } catch (error) {
             console.log('Error updating user:', error);
         }
         if (paymentMethod === "Online Payment") {
+            createRPOrder()
             var options = {
                 description: 'Credits towards consultation',
                 image: 'https://i.imgur.com/3g7nmJC.jpg',
                 currency: 'INR',
                 key: 'rzp_test_s96WrESoIIuwmE',
-                amount: '5000',
+                amount: totalPrice * 100,
                 name: 'Food Stack',
-                order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
+                order_id: rpOrder.id,
                 prefill: {
-                    email: 'gaurav.kumar@example.com',
-                    contact: '9191919191',
-                    name: 'Gaurav Kumar'
+                    email: dbUser.email,
+                    contact: dbUser.phoneNumber,
+                    name: dbUser.name
                 },
                 theme: { color: '#53a20e' }
             }
             RazorpayCheckout.open(options).then((data) => {
-                // handle success
-                Alert.alert(`Success: ${data}`);
+                createOrder(rpOrder.id, data.razorpay_payment_id)
             }).catch((error) => {
-                // handle failure
                 Alert.alert(`Error: ${error.code} | ${error}`);
             });
         } else {
             try {
                 await createOrder()
-
             }
             catch (err) {
                 console.log(err)
-
             }
         }
-
     };
 
 

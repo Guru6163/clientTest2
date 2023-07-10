@@ -174,6 +174,20 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "razorpayPaymentId": {
+                    "name": "razorpayPaymentId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "razorpayOrderId": {
+                    "name": "razorpayOrderId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -609,5 +623,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "6614bef9ea7975bd1cf255e6e73bb562"
+    "version": "b8ed5aed0803ee40f636aed13aa99da2"
 };

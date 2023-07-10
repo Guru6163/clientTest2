@@ -4,6 +4,8 @@ import { Order, OrderDish, Dish } from "../models";
 import { useAuthContext } from "./AuthContext";
 import { useBasketContext } from "./BasketContext";
 
+
+
 const OrderContext = createContext({});
 
 const OrderContextProvider = ({ children }) => {
@@ -11,12 +13,14 @@ const OrderContextProvider = ({ children }) => {
   const { restaurant, totalPrice, cartItems, setCartItems } = useBasketContext();
   const [orders, setOrders] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("")
+  const [rpOrder, setRpOrder] = useState({})
 
   useEffect(() => {
     DataStore.query(Order, (o) => o.userID.eq(dbUser.id)).then(setOrders);
   }, [dbUser]);
 
-  const createOrder = async () => {
+  const createOrder = async (rpOrderId, rpPaymentId) => {
+    console.log(rpOrderId, rpPaymentId)
     try {
       const newOrder = await DataStore.save(
         new Order({
@@ -24,7 +28,9 @@ const OrderContextProvider = ({ children }) => {
           Restaurant: restaurant,
           status: "NEW",
           total: parseInt(totalPrice),
-          paymentMethod: (paymentMethod).toString()
+          paymentMethod: (paymentMethod).toString(),
+          razorpayPaymentId: rpPaymentId || "",
+          razorpayOrderId: rpOrderId || ""
         })
       );
 
@@ -54,7 +60,7 @@ const OrderContextProvider = ({ children }) => {
     }
   };
 
-
+  
   const getOrder = async (id) => {
     const order = await DataStore.query(Order, id);
     const orderDishes = await DataStore.query(OrderDish, (od) =>
@@ -65,7 +71,7 @@ const OrderContextProvider = ({ children }) => {
   };
 
   return (
-    <OrderContext.Provider value={{ createOrder, orders, getOrder, setPaymentMethod }}>
+    <OrderContext.Provider value={{ createOrder, orders, getOrder, setPaymentMethod, rpOrder }}>
       {children}
     </OrderContext.Provider>
   );
