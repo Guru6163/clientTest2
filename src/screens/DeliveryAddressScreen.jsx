@@ -23,6 +23,7 @@ function DeliveryAddressScreen() {
     const [lng, setLng] = useState(dbUser?.lng.toString() || '0');
     const [rpOrder, setRpOrder] = useState({})
     const [paymentMethod, setPaymentMethod] = useState("Online Payment")
+    const [loading, setLoading] = useState(false);
 
     const createRPOrder = async () => {
         const username = 'rzp_test_s96WrESoIIuwmE';
@@ -40,7 +41,7 @@ function DeliveryAddressScreen() {
                 'Authorization': `Basic ${encodedCredentials}`
             },
             body: JSON.stringify({
-                "amount": totalPrice*100,
+                "amount": totalPrice * 100,
                 "currency": "INR",
             })
 
@@ -64,6 +65,7 @@ function DeliveryAddressScreen() {
     });
 
     const getCurrentLocation = async () => {
+        setLoading(true);
         try {
             Geolocation.getCurrentPosition(
                 position => {
@@ -77,15 +79,20 @@ function DeliveryAddressScreen() {
                         latitudeDelta: 0.0321,
                         longitudeDelta: 0.0021,
                     })
+                    setLoading(false)
 
                 },
                 error => {
+                    setLoading(false); // Stop loading
                     console.log('Error getting current location:', error);
+
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
             );
         } catch (error) {
+            setLoading(false); // Stop loading
             console.log('Error getting current location:', error);
+
         }
     };
 
@@ -156,7 +163,11 @@ function DeliveryAddressScreen() {
             <View style={styles.mapContainer}>
                 <Text style={styles.instructionsText}>Drag and drop the pin to accurately mark your current location</Text>
                 <TouchableOpacity onPress={getCurrentLocation} style={{ width: "100%", padding: 10, backgroundColor: "#4B5563" }}>
-                    <Text style={styles.proceedButtonText}>Locate Me</Text>
+                    {loading ? (
+                        <ActivityIndicator size="small" color="white" />
+                    ) : (
+                        <Text style={styles.proceedButtonText}>Locate Me</Text>
+                    )}
                 </TouchableOpacity>
                 <MapView
                     style={styles.map}
@@ -207,7 +218,7 @@ function DeliveryAddressScreen() {
                 </Picker>
 
             </View>
-            <Text style={{paddingHorizontal:20,marginTop:10}}>
+            <Text style={{ paddingHorizontal: 20, marginTop: 10 }}>
                 Order Total : {totalPrice}
             </Text>
 
