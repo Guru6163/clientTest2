@@ -160,6 +160,20 @@ export const schema = {
                         ]
                     }
                 },
+                "paymentMethod": {
+                    "name": "paymentMethod",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "total": {
+                    "name": "total",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -595,5 +609,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "3f908da97636472e0c56cd5815eb3084"
+    "version": "6614bef9ea7975bd1cf255e6e73bb562"
 };

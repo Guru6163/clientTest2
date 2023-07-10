@@ -111,31 +111,16 @@ function ProfileScreen() {
           placeholderTextColor="#888"
           keyboardType="email-address"
         />
-
-
-
-        <TextInput
-          style={styles.input}
-          placeholder="Latitude"
-          value={lat}
-          onChangeText={setLat}
-          placeholderTextColor="#888"
-          keyboardType="numeric"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Longitude"
-          value={lng}
-          onChangeText={setLng}
-          placeholderTextColor="#888"
-          keyboardType="numeric"
-        />
       </View>
 
       <TouchableOpacity onPress={onSave} style={styles.saveButton}>
         <Text style={styles.saveButtonText}>Save</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => Auth.signOut()} style={styles.signOutButton}>
+      <TouchableOpacity onPress={() => {
+        setDbUser([])
+        Auth.signOut()
+        navigation.navigate("SignIn")
+      }} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
     </View>

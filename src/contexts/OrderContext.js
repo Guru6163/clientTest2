@@ -10,6 +10,7 @@ const OrderContextProvider = ({ children }) => {
   const { dbUser } = useAuthContext();
   const { restaurant, totalPrice, cartItems, setCartItems } = useBasketContext();
   const [orders, setOrders] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState("")
 
   useEffect(() => {
     DataStore.query(Order, (o) => o.userID.eq(dbUser.id)).then(setOrders);
@@ -22,14 +23,16 @@ const OrderContextProvider = ({ children }) => {
           userID: dbUser.id,
           Restaurant: restaurant,
           status: "NEW",
-          total: totalPrice,
+          total: parseInt(totalPrice),
+          paymentMethod: (paymentMethod).toString()
         })
       );
+
       await Promise.all(
         cartItems.map(async (basketDish) => {
           const { quantity, id } = basketDish;
           const fetchedDish = await DataStore.query(Dish, id);
-          console.log(fetchedDish);
+
           if (fetchedDish) {
             const dishInstance = fetchedDish;
             await DataStore.save(
@@ -43,7 +46,7 @@ const OrderContextProvider = ({ children }) => {
         })
       );
 
-      setOrders([newOrder,...orders]);
+      setOrders([newOrder, ...orders]);
       setCartItems([])
     } catch (error) {
       console.log("Error creating order:", error);
@@ -62,7 +65,7 @@ const OrderContextProvider = ({ children }) => {
   };
 
   return (
-    <OrderContext.Provider value={{ createOrder, orders, getOrder }}>
+    <OrderContext.Provider value={{ createOrder, orders, getOrder, setPaymentMethod }}>
       {children}
     </OrderContext.Provider>
   );

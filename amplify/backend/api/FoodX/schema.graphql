@@ -26,6 +26,8 @@ type Order @model @auth(rules: [{allow: public}]) {
   status: OrderStatus
   OrderDishes: [OrderDish] @hasMany(indexName: "byOrder", fields: ["id"])
   Restaurant: Restaurant @hasOne
+  paymentMethod: String!
+  total: Int!
 }
 
 type Dish @model @auth(rules: [{allow: public}]) {

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Header from '../components/Header';
 import MapView, { Marker } from 'react-native-maps';
 import { useAuthContext } from '../contexts/AuthContext';
 import Geolocation from '@react-native-community/geolocation';
 import RazorpayCheckout from 'react-native-razorpay';
+import { User } from '../models';
+import { DataStore } from 'aws-amplify';
+import { useOrderContext } from '../contexts/OrderContext';
 
 function DeliveryAddressScreen() {
-    const { dbUser } = useAuthContext();
+    const { dbUser, setDbUser } = useAuthContext();
+    const { createOrder, setPaymentMethod: setPayment } = useOrderContext()
     const [name, setName] = useState(dbUser?.name || '');
     const [address, setAddress] = useState(dbUser?.address || '');
     const [phoneNumber, setPhoneNumber] = useState(dbUser?.phoneNumber || '');
@@ -61,9 +65,55 @@ function DeliveryAddressScreen() {
         setLng(longitude.toString());
     };
 
-    const handleProceed = () => {
-        // Handle the proceed action
-        console.log('Proceed to payment:', paymentMethod);
+    const handleProceed = async () => {
+        try {
+            const user = await DataStore.save(
+                User.copyOf(dbUser, (updated) => {
+                    updated.name = name;
+                    updated.address = address;
+                    updated.lat = parseFloat(lat);
+                    updated.lng = parseFloat(lng);
+                    updated.phoneNumber = phoneNumber.toString();
+                })
+            );
+            setDbUser(user);
+            Alert.alert('User Updated Successfully', JSON.stringify(user));
+        } catch (error) {
+            console.log('Error updating user:', error);
+        }
+        if (paymentMethod === "Online Payment") {
+            var options = {
+                description: 'Credits towards consultation',
+                image: 'https://i.imgur.com/3g7nmJC.jpg',
+                currency: 'INR',
+                key: 'rzp_test_s96WrESoIIuwmE',
+                amount: '5000',
+                name: 'Food Stack',
+                order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
+                prefill: {
+                    email: 'gaurav.kumar@example.com',
+                    contact: '9191919191',
+                    name: 'Gaurav Kumar'
+                },
+                theme: { color: '#53a20e' }
+            }
+            RazorpayCheckout.open(options).then((data) => {
+                // handle success
+                Alert.alert(`Success: ${data}`);
+            }).catch((error) => {
+                // handle failure
+                Alert.alert(`Error: ${error.code} | ${error}`);
+            });
+        } else {
+            try {
+                await createOrder()
+
+            }
+            catch (err) {
+                console.log(err)
+
+            }
+        }
 
     };
 
@@ -117,7 +167,10 @@ function DeliveryAddressScreen() {
                 <Picker
                     style={styles.paymentInput}
                     selectedValue={paymentMethod}
-                    onValueChange={(value) => setPaymentMethod(value)}
+                    onValueChange={(value) => {
+                        setPaymentMethod(value)
+                        setPayment(value)
+                    }}
                 >
                     <Picker.Item label="Online Payment" value="Online Payment" />
                     <Picker.Item label="Cash On Delivery" value="Cash On Delivery" />
@@ -125,30 +178,7 @@ function DeliveryAddressScreen() {
 
             </View>
 
-            <TouchableOpacity onPress={() => {
-                var options = {
-                    description: 'Credits towards consultation',
-                    image: 'https://i.imgur.com/3g7nmJC.jpg',
-                    currency: 'INR',
-                    key: 'rzp_test_s96WrESoIIuwmE',
-                    amount: '5000',
-                    name: 'Acme Corp',
-                    order_id: 'order_DslnoIgkIDL8Zt',//Replace this with an order_id created using Orders API.
-                    prefill: {
-                        email: 'gaurav.kumar@example.com',
-                        contact: '9191919191',
-                        name: 'Gaurav Kumar'
-                    },
-                    theme: { color: '#53a20e' }
-                }
-                RazorpayCheckout.open(options).then((data) => {
-                    // handle success
-                    alert(`Success: ${data}`);
-                }).catch((error) => {
-                    // handle failure
-                    alert(`Error: ${error.code} | ${error}`);
-                });
-            }} style={styles.proceedButton}>
+            <TouchableOpacity onPress={handleProceed} style={styles.proceedButton}>
                 <Text style={styles.proceedButtonText}>Proceed</Text>
             </TouchableOpacity>
 
