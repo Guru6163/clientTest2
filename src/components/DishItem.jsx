@@ -26,9 +26,10 @@ const DishItem = ({ dishItem }) => {
         addToCart(dishItem);
     };
 
+    
 
     useEffect(() => {
-        const cartItem = cartItems.find((item) => item.id === dishItem.id);
+        const cartItem = cartItems.find((item) => item?.id === dishItem?.id);
         if (cartItem) {
             setQuantity(cartItem.quantity);
             setShowControls(true);
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     dishName: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
     },

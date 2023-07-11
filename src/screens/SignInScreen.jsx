@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,11 +16,31 @@ import SocialSignInButtons from '../components/SocialSignInButtons/SocialSignInB
 import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { Auth } from 'aws-amplify';
+import { DataStore } from 'aws-amplify';
+import { User } from '../models';
+import { useAuthContext } from '../contexts/AuthContext';
+
 
 const SignInScreen = () => {
+  const {setDbUser} = useAuthContext()
   const { height, width } = useWindowDimensions();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const [bottomPadding, setBottomPadding] = useState(0);
+  const [sub, setSub] = useState(null)
+
+  useEffect(() => {
+    const paddingBottom = height * 0.05; // Adjust this value as needed
+    setBottomPadding(paddingBottom);
+  }, [height]);
+
+  const getDbUser = (id) => {
+    DataStore.query(User, (user) => user.sub.eq(id))
+      .then((users) => {
+        setDbUser(users[0]);
+      })
+      .catch((err) => console.log(err));
+  }
 
   const {
     control,
@@ -36,8 +56,9 @@ const SignInScreen = () => {
     setLoading(true);
     try {
       const response = await Auth.signIn(data.username, data.password);
-      console.log(response);
-      navigation.navigate("Home")
+      console.log(response)
+      getDbUser(response.attributes?.sub)
+      navigation.navigate("HomeTabs")
     } catch (e) {
       Alert.alert('Oops', e.message);
     }
@@ -53,27 +74,26 @@ const SignInScreen = () => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.scrollViewContent,
-        { minHeight: height }
-      ]}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={styles.root}>
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={[styles.scrollViewContent, { paddingBottom: bottomPadding }]}
+        keyboardShouldPersistTaps="handled"
+      >
         <Image
           source={Logo}
-          style={[styles.logo, { maxHeight: height * 0.2 }]}
+          style={[styles.logo]}
           resizeMode="contain"
         />
-
+        <View style={styles.infoContainer}>
+          <Text style={styles.titleText}>Let's Sign You In</Text>
+          <Text style={styles.subtitleText}>Welcome back, you've been missed</Text>
+        </View>
         <CustomInput
           name="username"
           placeholder="Username"
           control={control}
           rules={{ required: 'Username is required' }}
         />
-
         <CustomInput
           name="password"
           placeholder="Password"
@@ -87,7 +107,6 @@ const SignInScreen = () => {
             },
           }}
         />
-
         <CustomButton
           text={loading ? 'Loading...' : 'Sign In'}
           onPress={handleSubmit(onSignInPressed)}
@@ -98,31 +117,55 @@ const SignInScreen = () => {
           onPress={onForgotPasswordPressed}
           type="TERTIARY"
         />
-
-        <SocialSignInButtons />
-
         <CustomButton
           text="Don't have an account? Create one"
           onPress={onSignUpPress}
           type="TERTIARY"
         />
+      </ScrollView>
+      <View style={styles.developedByContainer}>
+        <Text style={styles.developedByText}>Developed By GuruF</Text>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
-  },
-  root: {
-    alignItems: 'center',
     padding: 20,
   },
   logo: {
     width: '100%',
-    marginLeft:30
+    marginLeft: 10,
+    height: 100,
+  },
+  infoContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "black",
+  },
+  subtitleText: {
+    fontSize: 14,
+    color: "gray",
+  },
+  developedByContainer: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  developedByText: {
+    fontSize: 14,
+    color: 'gray',
   },
 });
 

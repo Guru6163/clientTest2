@@ -33,7 +33,7 @@ const OrdersScreen = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.orderCard}>
-      <Text style={styles.orderNumber}>Order ID: {item.id}</Text>
+      <Text style={styles.orderNumber}>Order ID: {item?.id}</Text>
       <Text style={styles.totalPrice}>Total Price: Rs {item.total}</Text>
       <Text style={styles.date}>Date: {new Date(item.createdAt).toLocaleString()}</Text>
       <Text style={styles.status}>Status: {item.status}</Text>
@@ -53,7 +53,7 @@ const OrdersScreen = () => {
       <Header title="FoodX" />
       <FlatList
         data={orders}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item?.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
       />

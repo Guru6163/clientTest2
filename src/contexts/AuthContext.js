@@ -3,41 +3,42 @@ import { Auth, DataStore } from "aws-amplify";
 import { User } from "../models";
 
 const AuthContext = createContext({});
-
 const AuthContextProvider = ({ children }) => {
     const [authUser, setAuthUser] = useState(null);
     const [dbUser, setDbUser] = useState(null);
-    const sub = authUser?.attributes?.sub;
-
-
-    const getCurrentUser = async () => {
+    const [sub, setSub] = useState(authUser?.attributes?.sub || null);
+  
+    useEffect(() => {
+      const getCurrentUser = async () => {
         try {
-            const currentUser = await Auth.currentAuthenticatedUser({ bypassCache: true });
-            setAuthUser(currentUser);
+          const currentUser = await Auth.currentAuthenticatedUser({ bypassCache: true });
+          setAuthUser(currentUser);
+          setSub(currentUser.attributes?.sub);
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
-    };
-
-    useEffect(() => {
-        getCurrentUser();
+      };
+  
+      getCurrentUser();
     }, []);
-
+  
     useEffect(() => {
-        if (sub) {
-            DataStore.query(User, (user) => user.sub.eq(sub)).then((users) =>
-                setDbUser(users[0])
-            ).catch(err => console.log(err))
-        }
-
+      if (sub) {
+        DataStore.query(User, (user) => user.sub.eq(sub))
+          .then((users) => {
+            setDbUser(users[0]);
+          })
+          .catch((err) => console.log(err));
+      }
     }, [sub]);
-
+  
     return (
-        <AuthContext.Provider value={{ authUser, dbUser, sub, setDbUser }}>
-            {children}
-        </AuthContext.Provider>
+      <AuthContext.Provider value={{ authUser, dbUser, sub, setDbUser }}>
+        {children}
+      </AuthContext.Provider>
     );
-};
+  };
+  
 
 export default AuthContextProvider;
 

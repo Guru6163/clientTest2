@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const RestaurantCard = ({ data }) => {
   const navigation = useNavigation();
   const handleCardPress = () => {
-    navigation.navigate("Restaurant", { id: data.id });
+    navigation.navigate("Restaurant", { id: data?.id });
   };
 
   const renderRatingStars = () => {
@@ -32,22 +32,22 @@ const RestaurantCard = ({ data }) => {
     );
   };
 
-  // const getCategoryName = (category) => {
-  //   const categoryWithoutHyphen = category.replace(/-/g, " "); // Replace hyphen "-" with a space " "
+  const getCategoryName = (category="") => {
+    const categoryWithoutHyphen = category.replace(/-/g, " "); // Replace hyphen "-" with a space " "
 
-  //   switch (categoryWithoutHyphen) {
-  //     case "VEG":
-  //       return "Veg";
-  //     case "NON_VEG":
-  //       return "Non-Veg";
-  //     case "BOTH":
-  //       return "Veg and Non-Veg";
-  //     case "JUICES":
-  //       return "Juices";
-  //     default:
-  //       return capitalizeFirstLetter(categoryWithoutHyphen);
-  //   }
-  // };
+    switch (categoryWithoutHyphen) {
+      case "VEG":
+        return "Veg";
+      case "NON_VEG":
+        return "Non-Veg";
+      case "BOTH":
+        return "Veg and Non-Veg";
+      case "JUICES":
+        return "Juices";
+      default:
+        return capitalizeFirstLetter(categoryWithoutHyphen);
+    }
+  };
 
   return (
     <Pressable onPress={handleCardPress}>
@@ -55,7 +55,7 @@ const RestaurantCard = ({ data }) => {
         <Image source={{ uri: data.image }} style={styles.image} />
         <View style={styles.details}>
           <Text style={styles.name}>{data.name}</Text>
-          <Text style={styles.cuisine}>{data?.category}</Text>
+          <Text style={styles.cuisine}>{getCategoryName(data?.category)}</Text>
           {renderRatingStars()}
           <Text style={styles.deliveryTime}>
             Delivery Time: {data.minDeliveryTime}-{data.maxDeliveryTime} mins
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: 'bold',
+    color:"black"
   },
   cuisine: {
     fontSize: 16,

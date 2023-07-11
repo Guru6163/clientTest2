@@ -33,7 +33,7 @@ const HomeScreen = ({ navigation }) => {
   }, [isFocused, fetchRestaurants]);
 
   const renderRestaurantItem = ({ item }) => {
-    return <RestaurantCard data={item} />;
+    return <RestaurantCard data={item} key={item.id} />;
   };
 
   return (
@@ -46,7 +46,7 @@ const HomeScreen = ({ navigation }) => {
           style={styles.flatList}
           data={restaurants}
           renderItem={renderRestaurantItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?.id}
         />
       </ScrollView>
     </View>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ActivityIndicator, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Header from '../components/Header';
 import MapView, { Marker } from 'react-native-maps';
@@ -11,16 +11,21 @@ import { DataStore } from 'aws-amplify';
 import { useOrderContext } from '../contexts/OrderContext';
 import { useBasketContext } from '../contexts/BasketContext';
 import { encode as base64Encode } from 'base-64';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+
+
 
 function DeliveryAddressScreen() {
+    const navigation = useNavigation()
     const { dbUser, setDbUser } = useAuthContext();
-    const { totalPrice } = useBasketContext()
+    const { totalPrice, cartItems } = useBasketContext()
     const { createOrder } = useOrderContext()
     const [name, setName] = useState(dbUser?.name || '');
     const [address, setAddress] = useState(dbUser?.address || '');
     const [phoneNumber, setPhoneNumber] = useState(dbUser?.phoneNumber || '');
-    const [lat, setLat] = useState(dbUser?.lat.toString() || '0');
-    const [lng, setLng] = useState(dbUser?.lng.toString() || '0');
+    const [lat, setLat] = useState(dbUser?.lat?.toString() || '0');
+    const [lng, setLng] = useState(dbUser?.lng?.toString() || '0');
     const [rpOrder, setRpOrder] = useState({})
     const [paymentMethod, setPaymentMethod] = useState("Online Payment")
     const [loading, setLoading] = useState(false);
@@ -41,6 +46,7 @@ function DeliveryAddressScreen() {
                 'Authorization': `Basic ${encodedCredentials}`
             },
             body: JSON.stringify({
+                "amount": totalPrice * 100,
                 "amount": totalPrice * 100,
                 "currency": "INR",
             })
@@ -80,18 +86,23 @@ function DeliveryAddressScreen() {
                         longitudeDelta: 0.0021,
                     })
                     setLoading(false)
+                    setLoading(false)
 
                 },
                 error => {
                     setLoading(false); // Stop loading
+                    setLoading(false); // Stop loading
                     console.log('Error getting current location:', error);
+
 
                 },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
             );
         } catch (error) {
             setLoading(false); // Stop loading
+            setLoading(false); // Stop loading
             console.log('Error getting current location:', error);
+
 
         }
     };
@@ -132,7 +143,7 @@ function DeliveryAddressScreen() {
                 key: 'rzp_test_s96WrESoIIuwmE',
                 amount: totalPrice * 100,
                 name: 'Food Stack',
-                order_id: rpOrder.id,
+                order_id: rpOrder?.id,
                 prefill: {
                     email: dbUser.email,
                     contact: dbUser.phoneNumber,
@@ -141,7 +152,7 @@ function DeliveryAddressScreen() {
                 theme: { color: '#53a20e' }
             }
             RazorpayCheckout.open(options).then((data) => {
-                createOrder(rpOrder.id, data.razorpay_payment_id, paymentMethod)
+                createOrder(rpOrder?.id, data.razorpay_payment_id, paymentMethod)
             }).catch((error) => {
                 Alert.alert(`Error: Payment Failed`);
             });
@@ -157,6 +168,7 @@ function DeliveryAddressScreen() {
 
 
     return (
+
         <ScrollView style={styles.container}>
             <Header title="FoodX" />
             <Text style={styles.deliveryTitle}>Delivery Details</Text>
@@ -168,6 +180,7 @@ function DeliveryAddressScreen() {
                     ) : (
                         <Text style={styles.proceedButtonText}>Locate Me</Text>
                     )}
+                
                 </TouchableOpacity>
                 <MapView
                     style={styles.map}

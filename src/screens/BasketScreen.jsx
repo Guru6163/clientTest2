@@ -38,7 +38,7 @@ const BasketScreen = () => {
         <FlatList
           data={cartItems}
           renderItem={({ item }) => <BasketDishItem basketDish={item} />}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?.id}
           contentContainerStyle={styles.listContainer}
         />
       </View>

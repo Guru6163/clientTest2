@@ -55,7 +55,7 @@ const OrderContextProvider = ({ children }) => {
 
       setOrders([newOrder, ...orders]);
       setCartItems([])
-      navigation.navigate("Orders")
+      navigation.navigate("Restaurants")
     } catch (error) {
       Alert.alert("Error creating order:", error);
 

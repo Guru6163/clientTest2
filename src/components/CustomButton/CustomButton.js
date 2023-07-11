@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
 
-    padding: 15,
+    
     marginVertical: 5,
 
     alignItems: 'center',
@@ -35,14 +35,18 @@ const styles = StyleSheet.create({
 
   container_PRIMARY: {
     backgroundColor: '#3B71F3',
+    padding: 15,
   },
 
   container_SECONDARY: {
     borderColor: '#3B71F3',
     borderWidth: 2,
+    padding: 15,
   },
 
-  container_TERTIARY: {},
+  container_TERTIARY: {
+    padding: 5,
+  },
 
   text: {
     fontWeight: 'bold',

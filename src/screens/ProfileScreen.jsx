@@ -7,15 +7,12 @@ import { useAuthContext } from '../contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { DataStore } from 'aws-amplify';
 import { User } from '../models';
-import MapView, { Marker } from 'react-native-maps';
 
 
 function ProfileScreen() {
   const { dbUser } = useAuthContext();
   const [name, setName] = useState(dbUser?.name || '');
   const [address, setAddress] = useState(dbUser?.address || '');
-  const [lat, setLat] = useState(dbUser?.lat.toString() || '0');
-  const [lng, setLng] = useState(dbUser?.lng.toString() || '0');
   const [phoneNumber, setPhoneNumber] = useState(dbUser?.phoneNumber || '');
   const [email, setEmail] = useState(dbUser?.email || '');
 
@@ -37,8 +34,6 @@ function ProfileScreen() {
         User.copyOf(dbUser, (updated) => {
           updated.name = name;
           updated.address = address;
-          updated.lat = parseFloat(lat);
-          updated.lng = parseFloat(lng);
           updated.phoneNumber = phoneNumber.toString();
           updated.email = email;
         })
@@ -56,8 +51,6 @@ function ProfileScreen() {
         new User({
           name,
           address,
-          lat: parseFloat(lat),
-          lng: parseFloat(lng),
           phoneNumber: phoneNumber.toString(),
           email,
           sub,
@@ -119,7 +112,7 @@ function ProfileScreen() {
       <TouchableOpacity onPress={() => {
         setDbUser([])
         Auth.signOut()
-        navigation.navigate("SignIn")
+        navigation.navigate("SignInStack")
       }} style={styles.signOutButton}>
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
