@@ -45,7 +45,8 @@ const DishItem = ({ dishItem }) => {
             <View style={styles.dishDetails}>
                 <View style={styles.itemDetailsContainer}>
                     <Text style={styles.dishName}>{dishItem.name}</Text>
-                    <Text style={styles.dishPrice}>Rs{dishItem.price}</Text>
+                    <Text style={styles.dishPrice}>₹
+{dishItem.price}</Text>
                 </View>
 
                 {showControls ? (

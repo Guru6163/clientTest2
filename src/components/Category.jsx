@@ -16,8 +16,6 @@ const Category = () => {
         return 'Both Veg and Non-Veg';
       case 'JUICES':
         return 'Juices';
-      default:
-        return capitalizeFirstLetter(categoryWithoutHyphen);
     }
   };
 

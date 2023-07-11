@@ -28,13 +28,11 @@ const BasketScreen = () => {
     <View style={styles.container}>
       <Header title="FoodX" />
       <View style={styles.orderContainer}>
+        <View style={styles.restaurantContainer}>
+          <Text style={styles.restaurantTitle}>Restaurant</Text>
+          <Text style={styles.restaurantName}>{restaurant?.name}</Text>
+        </View>
         <Text style={styles.sectionTitle}>Cart Items</Text>
-        {cartItems.length > 0 && (
-          <View>
-            <Text style={styles.restaurantName}>Restaurant</Text>
-            <Text style={styles.restaurantName}>{restaurant?.name}</Text>
-          </View>
-        )}
         <FlatList
           data={cartItems}
           renderItem={({ item }) => <BasketDishItem basketDish={item} />}
@@ -44,13 +42,12 @@ const BasketScreen = () => {
       </View>
       {cartItems.length > 0 && (
         <View style={styles.totalContainer}>
+          <Text style={styles.totalPrice}>Total: ₹{totalPrice.toFixed(2)}</Text>
           <Pressable onPress={onCreateOrder} style={styles.button} disabled={isLoading}>
             {isLoading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text style={styles.buttonText}>
-                {`Create Order • Rs ${totalPrice.toFixed(2)}`}
-              </Text>
+              <Text style={styles.buttonText}>Create Order</Text>
             )}
           </Pressable>
         </View>
@@ -68,15 +65,26 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
   },
-  restaurantName: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  restaurantContainer: {
+    marginBottom: 20,
   },
-  sectionTitle: {
+  restaurantTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#777',
+  },
+  restaurantName: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#333',
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
   },
   listContainer: {
     paddingBottom: 16,
@@ -91,12 +99,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#333',
   },
   button: {
     backgroundColor: '#1C64F2',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: 'white',

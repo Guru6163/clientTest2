@@ -8,7 +8,6 @@ import { useNavigation } from '@react-navigation/native';
 import { DataStore } from 'aws-amplify';
 import { User } from '../models';
 
-
 function ProfileScreen() {
   const { dbUser } = useAuthContext();
   const [name, setName] = useState(dbUser?.name || '');
@@ -63,59 +62,74 @@ function ProfileScreen() {
     }
   };
 
-
-
   return (
     <View style={styles.container}>
       <Header title="FoodX" />
-      <View style={styles.profileHeader}>
-        <Icon name="person-circle-outline" size={30} color="#1C64F2" style={styles.profileIcon} />
-        <Text style={styles.header}>Profile</Text>
+      <View style={styles.profileContainer}>
+        <View style={styles.profileAvatar}>
+          <Icon name="person-circle-outline" size={120} color="#1C64F2" style={styles.profileIcon} />
+        </View>
+        <Text style={styles.profileName}>{dbUser?.name}</Text>
       </View>
 
-      <View style={styles.profileInfo}>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-          placeholderTextColor="#888"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Address"
-          value={address}
-          onChangeText={setAddress}
-          placeholderTextColor="#888"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          placeholderTextColor="#888"
-          keyboardType="phone-pad"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          placeholderTextColor="#888"
-          keyboardType="email-address"
-        />
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Icon name="person-outline" size={24} color="#1C64F2" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            value={name}
+            onChangeText={setName}
+            placeholderTextColor="#888"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="location-outline" size={24} color="#1C64F2" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Address"
+            value={address}
+            onChangeText={setAddress}
+            placeholderTextColor="#888"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="call-outline" size={24} color="#1C64F2" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholderTextColor="#888"
+            keyboardType="phone-pad"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="mail-outline" size={24} color="#1C64F2" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            placeholderTextColor="#888"
+            keyboardType="email-address"
+          />
+        </View>
       </View>
 
-      <TouchableOpacity onPress={onSave} style={styles.saveButton}>
-        <Text style={styles.saveButtonText}>Save</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => {
-        setDbUser([])
-        Auth.signOut()
-        navigation.navigate("SignInStack")
-      }} style={styles.signOutButton}>
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        
+        <TouchableOpacity onPress={() => {
+          setDbUser([])
+          Auth.signOut()
+          navigation.navigate("SignInStack")
+        }} style={styles.signOutButton}>
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onSave} style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Update</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -123,74 +137,92 @@ function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: 'white',
   },
-  profileHeader: {
+  profileContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  profileAvatar: {
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    borderRadius: 60,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  profileIcon: {
+    fontSize: 100,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1C64F2',
+  },
+  formContainer: {
+    paddingHorizontal: 20,
+  },
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  profileIcon: {
-    marginRight: 5,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  profileInfo: {
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    width: '100%',
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    width: '100%',
+    flex: 1,
     height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 20,
-    paddingHorizontal: 10,
+    color: '#333333',
   },
-  locationButton: {
-    backgroundColor: '#1C64F2',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginBottom: 20,
-  },
-  locationButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   saveButton: {
     backgroundColor: '#1C64F2',
-    paddingVertical: 5,
-    margin: 5,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    width: '50%',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   saveButtonText: {
-    color: 'white',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   signOutButton: {
-    backgroundColor: '#1C64F2',
-    paddingVertical: 5,
-    margin: 5,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    width: '50%',
+    backgroundColor: '#F05345',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   signOutText: {
-    color: 'white',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

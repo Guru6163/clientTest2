@@ -74,7 +74,7 @@ const RestaurantDetailScreen = ({ route }) => {
       case "JUICES":
         return "Juices";
       default:
-        return capitalizeFirstLetter(categoryWithoutHyphen);
+        return (categoryWithoutHyphen);
     }
   };
 

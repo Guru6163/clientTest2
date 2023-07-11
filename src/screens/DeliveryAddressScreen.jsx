@@ -16,6 +16,7 @@ import { useRoute } from '@react-navigation/native';
 
 
 
+
 function DeliveryAddressScreen() {
     const navigation = useNavigation()
     const { dbUser, setDbUser } = useAuthContext();
@@ -92,11 +93,17 @@ function DeliveryAddressScreen() {
                 error => {
                     setLoading(false); // Stop loading
                     setLoading(false); // Stop loading
-                    console.log('Error getting current location:', error);
+                    console.log(error.message)
+                    if(error.message == ("No location provider available.")){
+                        Alert.alert("Turn on your GPS")
+                    }else{
+                        Alert.alert('Error getting current location:', error.message);
+                    }
+                    
 
 
                 },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                { enableHighAccuracy: true, timeout: 35000, maximumAge: 10000 }
             );
         } catch (error) {
             setLoading(false); // Stop loading

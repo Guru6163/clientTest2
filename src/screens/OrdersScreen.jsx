@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import { Order } from '../models';
 import { DataStore } from 'aws-amplify';
@@ -32,12 +32,15 @@ const OrdersScreen = () => {
   }, [fetchData]);
 
   const renderItem = ({ item }) => (
-    <View style={styles.orderCard}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('Order', { orderItem: item })}
+      style={styles.orderCard}
+    >
       <Text style={styles.orderNumber}>Order ID: {item?.id}</Text>
-      <Text style={styles.totalPrice}>Total Price: Rs {item.total}</Text>
+      <Text style={styles.totalPrice}>Total Price: ₹{item.total}</Text>
       <Text style={styles.date}>Date: {new Date(item.createdAt).toLocaleString()}</Text>
       <Text style={styles.status}>Status: {item.status}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   useEffect(() => {
@@ -64,26 +67,29 @@ const OrdersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // White background
+    backgroundColor: '#F8F8F8',
   },
   listContainer: {
     paddingVertical: 20,
     paddingHorizontal: 16,
   },
   orderCard: {
-    backgroundColor: '#f5f5f5', // Light gray background for the card
-    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     padding: 16,
     marginBottom: 16,
+    elevation: 2, // Add elevation for a subtle shadow effect
   },
   orderNumber: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
+    color: '#333',
   },
   totalPrice: {
     fontSize: 16,
     marginBottom: 8,
+    color: '#666',
   },
   date: {
     fontSize: 14,
@@ -92,7 +98,7 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 14,
-    color: '#008000', // Green color for 'Delivered', you can customize the colors as needed
+    color: '#1C64F2', // Customize the color for the status
   },
 });
 

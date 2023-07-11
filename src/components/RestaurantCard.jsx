@@ -45,7 +45,7 @@ const RestaurantCard = ({ data }) => {
       case "JUICES":
         return "Juices";
       default:
-        return capitalizeFirstLetter(categoryWithoutHyphen);
+        return (categoryWithoutHyphen);
     }
   };
 
@@ -68,8 +68,8 @@ const RestaurantCard = ({ data }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 8,
@@ -93,11 +93,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: 'bold',
-    color:"black"
+    color: '#333',
   },
-  cuisine: {
+  category: {
     fontSize: 16,
-    color: 'gray',
+    color: '#777',
     marginTop: 4,
   },
   ratingContainer: {
@@ -105,11 +105,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
+  rating: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginRight: 4,
+  },
   deliveryTime: {
     fontSize: 14,
-    color: 'gray',
+    color: '#777',
     marginTop: 8,
   },
 });
+
 
 export default RestaurantCard;
